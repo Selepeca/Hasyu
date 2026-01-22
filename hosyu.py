@@ -8,25 +8,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
-config = configparser.ConfigParser()
-config.read("hosyu.ini", encoding="utf-8")
-
-URL = config["settings"]["url"]
-INTERVAL_SECONDS = int(config["settings"]["interval_seconds"])
-
-VALUES = [
-    config["settings"]["from"],
-    config["settings"]["mail"],
-    config["settings"]["message"],
-]
-
 NAMES = [
     "FROM",
     "mail",
     "MESSAGE",
 ]
-
-inputs = dict(zip(NAMES, VALUES))
 
 options = Options()
 options.add_argument("--headless=new")
@@ -46,14 +32,26 @@ wait = WebDriverWait(driver, 20)
 
 try:
     while True:
+        config = configparser.ConfigParser()
+        config.read("hosyu.ini", encoding="utf-8")
+
+        URL = config["settings"]["url"]
+        INTERVAL_SECONDS = int(config["settings"]["interval_seconds"])
+        VALUES = [
+            config["settings"]["from"],
+            config["settings"]["mail"],
+            config["settings"]["message"],
+        ]
+
+        inputs = dict(zip(NAMES, VALUES))
+
         driver.get(URL)
 
         try:
             close_button = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((
-                    By.CLASS_NAME,
-                    "rise-interstitial-close-button"
-                ))
+                EC.element_to_be_clickable(
+                    (By.CLASS_NAME, "rise-interstitial-close-button")
+                )
             )
             close_button.click()
         except TimeoutException:
@@ -62,17 +60,21 @@ try:
         for name, value in inputs.items():
             if name == "MESSAGE":
                 field = wait.until(
-                    EC.presence_of_element_located((
-                        By.XPATH,
-                        f'//textarea[contains(@class,"formelem") and @name="{name}"]'
-                    ))
+                    EC.presence_of_element_located(
+                        (
+                            By.XPATH,
+                            f'//textarea[contains(@class,"formelem") and @name="{name}"]',
+                        )
+                    )
                 )
             else:
                 field = wait.until(
-                    EC.presence_of_element_located((
-                        By.XPATH,
-                        f'//input[contains(@class,"formelem") and @name="{name}"]'
-                    ))
+                    EC.presence_of_element_located(
+                        (
+                            By.XPATH,
+                            f'//input[contains(@class,"formelem") and @name="{name}"]',
+                        )
+                    )
                 )
 
             field.clear()
@@ -85,10 +87,12 @@ try:
 
         try:
             submit_button = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((
-                    By.XPATH,
-                    f'//input[@name="submit" and @type="submit" and @value="上記全てを承諾して書き込む"]'
-                ))
+                EC.element_to_be_clickable(
+                    (
+                        By.XPATH,
+                        f'//input[@name="submit" and @type="submit" and @value="上記全てを承諾して書き込む"]',
+                    )
+                )
             )
             submit_button.click()
         except TimeoutException:
