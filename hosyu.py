@@ -30,6 +30,9 @@ options.add_argument("--log-level=3")
 driver = webdriver.Chrome(options=options)
 wait = WebDriverWait(driver, 20)
 
+lifespan = 20
+count = 0
+
 try:
     while True:
         config = configparser.ConfigParser()
@@ -44,6 +47,14 @@ try:
         ]
 
         inputs = dict(zip(NAMES, VALUES))
+
+        count += 1
+        if count >= lifespan:
+            print("-- Instance Recreate --")
+            driver.quit()
+            driver = webdriver.Chrome(options=options)
+            wait = WebDriverWait(driver, 20)
+            count = 0
 
         driver.get(URL)
 
