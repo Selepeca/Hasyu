@@ -28,9 +28,9 @@ options.add_argument("--disable-features=NetworkService")
 options.add_argument("--log-level=3")
 
 driver = webdriver.Chrome(options=options)
-wait = WebDriverWait(driver, 20)
+wait = WebDriverWait(driver, 10)
 
-lifespan = 20
+lifespan = 10
 count = 0
 
 try:
@@ -53,13 +53,13 @@ try:
             print("-- Instance Recreate --")
             driver.quit()
             driver = webdriver.Chrome(options=options)
-            wait = WebDriverWait(driver, 20)
+            wait = WebDriverWait(driver, 10)
             count = 0
 
         driver.get(URL)
 
         try:
-            close_button = WebDriverWait(driver, 5).until(
+            close_button = wait.until(
                 EC.element_to_be_clickable(
                     (By.CLASS_NAME, "rise-interstitial-close-button")
                 )
@@ -97,7 +97,7 @@ try:
         write_button.click()
 
         try:
-            submit_button = WebDriverWait(driver, 5).until(
+            submit_button = wait.until(
                 EC.element_to_be_clickable(
                     (
                         By.XPATH,
